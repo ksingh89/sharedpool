@@ -1,0 +1,3 @@
+#define DHCPDISCOVER 0
+#define DHCPREQUEST 1
+#define DHCPDECLINE 2

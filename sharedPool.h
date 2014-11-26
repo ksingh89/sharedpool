@@ -1,3 +1,9 @@
+enum state
+{
+	INIT_MT = 0,
+	CONFIG_MT,
+	PROC_MT
+};
 
 struct dhcpDiscover
 {

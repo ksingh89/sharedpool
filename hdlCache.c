@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include "sharedPool.h"
 #include "hdlCache.h"
+#include "spd.h"
 
-extern int ipAllocation(void);
-extern int ipDeallocation(void);
-extern int ipDecline(void);
+int ip[10];
 
 int hdlCache(event)
 {
 	int x;
 	printf("inside hdlCache");
+	initHdlCacheThread();
 	switch(event)
 		{
 			case IPALLOCATION:
@@ -25,20 +25,49 @@ int hdlCache(event)
 	return 1;
 }
 
+int initHdlCacheThread()
+{
+	printf("Inside initHdlCacheThread");
+	return 1;
+}
+
 int ipAllocation()
 {
 	printf("inside ipAllocation");
+//	Database connectivity
+	if(!spdConnect())
+	{
+		printf("\nERROR!!");
+		return 0;
+	}
 	return 1;
 }
 
 int ipDeallocation()
 {
 	printf("inside ipDeAllocation");
+	if(!spdDisconnect())
+	{
+		printf("\nERROR!!");
+		return 0;
+	}
 	return 1;
 }
 
 int ipDecline()
 {
 	printf("inside ipDecline");
+	if(!spdConnect())
+	{
+		printf("\nERROR!!");
+		return 0;
+	}
+//	resend the ip in the pool
+
+	if(!spdDisconnect())
+	{
+		printf("\nERROR!!");
+		return 0;
+	}
 	return 1;
 }

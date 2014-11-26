@@ -8,6 +8,8 @@ extern int hdlCache(int);
 int hdlDHCP(event)
 {
 	int x;
+	enum stateHdlDhcp state;
+	initHdlDhcpThread();
 	printf("inside hdlDHCP");
 	switch(event)
 	{
@@ -24,6 +26,11 @@ int hdlDHCP(event)
 	return 1;
 }
 
+int initHdlDhcpThread()
+{
+	printf("Inside initHdlDhcpThread");
+	return 1;
+}
 int hdlDiscover()
 {
 	int event = 0;

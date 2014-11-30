@@ -162,17 +162,15 @@ int getIpFromCache(){
 void refreshCache(){
 
 	printf("%s\n",__FUNCTION__);
-	int i=0, count=0;
+	int i=0;
 
 	time_t currentTime;
 	currentTime = time(NULL);
 	while(i<CACHEVALUE){
 		if(currentTime - ip[i].timestamp > 3600 && ip[i].ipState == 1){
 			//TODO uncomment it
-			//ip[i].ipState = 0;
+			ip[i].ipState = 0;
 		}
-//		if(ip[i].ipState == 0)
-//			count++;
 		i++;
 	}
 

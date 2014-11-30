@@ -167,7 +167,7 @@ void refreshCache(){
 	time_t currentTime;
 	currentTime = time(NULL);
 	while(i<CACHEVALUE){
-		if(currentTime - ip[i].timestamp > 3600 && ip[i].ipState == 1){
+		if(currentTime - ip[i].timestamp > 3 && ip[i].ipState == 1){
 			//TODO uncomment it
 			ip[i].ipState = 0;
 		}

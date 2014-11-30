@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include <time.h>
 #include "sharedPool.h"
 #include "hdlCache.h"
 #include "spd.h"
@@ -26,31 +26,7 @@ void hdlDHCP(void* ptr)
 	{
 		case DHCPDISCOVER:
 			printf("\nIn DHCPDISCOVER..");
-			cacheId = getIpFromCache();
-			printf("\ncacheId=%d", cacheId);
-
-			if(cacheId < 0)
-			{
-				printf("cache <0");
-
-				//TODO Commit cache(refreshCache) into db, if full
-				if(cacheId == -1){
-					refreshCache();
-					cacheId = getIpFromCache();
-					//Can modify request for previously assigned IP
-					if(cacheId < 0){
-						spdUpdate();
-					}
-				}
-				hdlDiscover(DHCPDISCOVER);
-				cacheId = 0;
-
-			}
-			printf("\ncacheId = %d ", cacheId);
-
-			ip[cacheId].ipState = ASSIGNED;
-
-			printf("\n IP Assigned = %s ", ip[cacheId].ip_addr);
+			hdlDiscover(DHCPDISCOVER);
 //			else
 //			{
 //				//ip[cacheId].ipState = ASSIGNED;
@@ -78,12 +54,40 @@ int initHdlDhcpThread()
 //int hdlDiscover(int event, char* ip)
 int hdlDiscover(int event)
 {
-	//char *ipdis;
-//	ipdis = ip;
 	printf("%s\n",__FUNCTION__);
-//	transfers the call to the cache thread for processing
-//	hdlCache(event, ipdis);
-	hdlCache(event);
+	cacheId = getIpFromCache();
+	printf("\ncacheId=%d", cacheId);
+
+	if(cacheId < 0)
+	{
+		printf("cache <0");
+
+		//TODO Commit cache(refreshCache) into db, if full
+		if(cacheId == -1){
+			refreshCache();
+			cacheId = getIpFromCache();
+			//Can modify request for previously assigned IP
+			if(cacheId < 0){
+				spdUpdate();
+			}
+		}
+		hdlCache(event);
+//		hdlDiscover(DHCPDISCOVER);
+		cacheId = 0;
+
+	}
+	printf("\ncacheId = %d ", cacheId);
+
+	time_t currentTime;
+	currentTime = time(NULL);
+
+	ip[cacheId].ipState = ASSIGNED;
+	ip[cacheId].timestamp = currentTime;
+
+	printf("\n IP Assigned = %s ", ip[cacheId].ip_addr);
+	printf("\n IP timestamp = %d ", ip[cacheId].timestamp);
+	printf("\n IP ipState = %d ", ip[cacheId].ipState);
+
 //	ip = ipdis;
 	return 1;
 }

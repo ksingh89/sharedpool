@@ -9,32 +9,53 @@
 //extern int hdlCache(int, char*);
 extern struct IP_ADDR ip[CACHEVALUE];
 extern int hdlCache(int);
-extern unsigned int cacheId;
+extern int getIpFromCache();
+extern int cacheId;
 
 void hdlDHCP(void* ptr)
 {
 	int *event=NULL;
 	int x;
-	char *ip;
+	char *ip1;
 	event = (int*)ptr;
 	enum stateHdlDhcp state;
 //	initHdlDhcpThread();
 	printf("%s\n",__FUNCTION__);
-	printf("event %d\n",*event);
+	printf("event = %d",*event);
 	switch(*event)
 	{
 		case DHCPDISCOVER:
-			if(!cacheId)
+			printf("\nIn DHCPDISCOVER..");
+			cacheId = getIpFromCache();
+			printf("\ncacheId=%d", cacheId);
+
+			if(cacheId < 0)
 			{
-			x = DHCPDISCOVER;
-//			Can modify request for previously assigned IP
-			hdlDiscover(x);
+				printf("cache <0");
+
+				//TODO Commit cache(refreshCache) into db, if full
+				if(cacheId == -1){
+					refreshCache();
+					cacheId = getIpFromCache();
+					//Can modify request for previously assigned IP
+					if(cacheId < 0){
+						spdUpdate();
+					}
+				}
+				hdlDiscover(DHCPDISCOVER);
+				cacheId = 0;
+
 			}
-			else
-			{
-//				ip[cacheId].ipState = ASSIGNED;
-				hdlDiscover(DHCPDISCOVERFROMCACHE);
-			}
+			printf("\ncacheId = %d ", cacheId);
+
+			ip[cacheId].ipState = ASSIGNED;
+
+			printf("\n IP Assigned = %s ", ip[cacheId].ip_addr);
+//			else
+//			{
+//				//ip[cacheId].ipState = ASSIGNED;
+//				hdlDiscover(DHCPDISCOVERFROMCACHE);
+//			}
 			break;
 		case DHCPREQUEST:
 			x = DHCPREQUEST;
@@ -46,7 +67,6 @@ void hdlDHCP(void* ptr)
 			hdlDecline(x);
 			break;
 	}
-//	printf("\nIP ADDR = %s\n",ip);
 	pthread_exit(NULL);
 }
 

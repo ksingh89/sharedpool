@@ -17,5 +17,6 @@ struct IP_ADDR
 {
 	char ip_addr[255];
 	enum ip_state ipState;//int lease;
+	int timestamp;
 
 };

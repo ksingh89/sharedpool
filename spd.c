@@ -6,6 +6,7 @@
 int isOpenDB = FALSE;
 sqlite3 *dbfile;
 struct IP_ADDR ip[10];
+char sql_update[256];
 
 extern struct IP_ADDR ip[10];
 //extern unsigned int cacheId;
@@ -51,14 +52,12 @@ int spdFetch()
 			printf("***sqlite3_step ERROR!!! %s(%d)***", sqlite3_errmsg(dbfile), intfetch);
 			return 0;
 		}
-		//char ipaddr[100]={0};
 		value = sqlite3_column_text(statement, 1);
 		strncpy(ip[i].ip_addr, value, 100);
-		//ip[i].ip_addr[0]=ipaddr;
-		printf("%s\n",ip[i].ip_addr);
-		ip[i].ipState = CACHE; //CACHE = 1
+		ip[i].ipState = CACHE; //CACHE = 0
+
+		printf("IP addresses =%s\n",ip[i].ip_addr);
 	}
-//	memcpy(ipDispatch, ip[0].ip_addr, sizeof ip[0].ip_addr);
 	return 1;
 }
 
@@ -88,10 +87,37 @@ int spdCommit()
 	return FALSE;
 }
 
+static int callback(void *data, int argc, char **argv, char **azColName)
+{
+   	int i;
+	//struct IP_ADDR ip[20];
+
+
+
+   	for(i=0; i<argc; i++)
+	{
+     	//to print column names and values if needed
+  	}
+ printf("\n");
+   return 0;
+}
+
+
 int spdUpdate()
 {
 	printf("%s\n",__FUNCTION__);
-	// UPDATE PROCEDURE
+	const char* data = "Callback function called";
+	char *zErrMsg = 0;
+	int n, rc, i=0;
+	while(i<CACHEVALUE && ip[i].ipState != 0){
+		n=snprintf(sql_update, 256, "UPDATE mac_ip set usedip='%s' where ip='%s';",ip[i].ipState, ip[i].ip_addr);
+		rc = sqlite3_exec(dbfile, sql_update, callback, (void *)data, &zErrMsg);
+		if( rc != SQLITE_OK ){
+			  fprintf(stderr, "SQL error: %s\n", "ERROR: Could not execute");
+		}
+		i++;
+	}
+// UPDATE PROCEDURE
 //	int intfetch,i;
 //	char* sql = "SELECT * from mac_ip";
 //	sqlite3_stmt *statement = NULL;

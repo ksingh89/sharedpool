@@ -19,9 +19,9 @@
 
 extern struct sspMessage* readMessage(char*, size_t);
 extern struct IP_ADDR ip[CACHEVALUE];
-extern unsigned int cacheId;
+extern int cacheId;
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
 	enum state stId;
 	int i, port, pid, listenfd, socketfd, hit, option, id, ret, temp;
@@ -77,7 +77,8 @@ int main(int argc, char *argv)
 //				ip[cacheId].ipState = INUSE;
 //			else
 //				printf("ERROR changing IP STATE!!! \n\n");
-			printf("IP value:%s and State:%d\n", ip[cacheId].ip_addr, ip[cacheId].ipState);
+			printf("cacheId = %d", cacheId);
+			printf("\nIP value:%s and State:%d\n", ip[cacheId].ip_addr, ip[cacheId].ipState);
 			ret = sendto(listenfd, (void *)ip[cacheId].ip_addr, sizeof ip[0].ip_addr, 0, (struct sockaddr*)&cli_addr, sizeof cli_addr);
 //			if(reqMessage->messageType == DHCPDISCOVER)
 //				ip[cacheId].ipState = ASSIGNED;
@@ -85,11 +86,11 @@ int main(int argc, char *argv)
 //				ip[cacheId].ipState = INUSE;
 //			else
 //				printf("ERROR changing IP STATE!!! \n\n");
-			cacheId++;
-			if(cacheId >= CACHEVALUE)
-			{
-				cacheId = 0;
-			}
+//			cacheId++;
+//			if(cacheId >= CACHEVALUE)
+//			{
+//				cacheId = 0;
+//			}
 //		}
 	}
 

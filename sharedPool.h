@@ -30,6 +30,6 @@ struct dhcpAck
 	int d;
 };
 
-unsigned int cacheId;
+int cacheId;
 unsigned int cacheAssignId;
 unsigned int cacheInuseId;

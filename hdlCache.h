@@ -10,3 +10,5 @@ int ipAllocation(void);
 int ipDeallocation(void);
 int ipDecline(void);
 int ipFromCache(void);
+int getIpFromCache();
+void refreshCache(void);

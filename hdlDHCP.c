@@ -1,49 +1,77 @@
 #include <stdio.h>
+
 #include "sharedPool.h"
-#include "hdlDHCP.h"
 #include "hdlCache.h"
+#include "spd.h"
+#include "ssp.h"
+#include "hdlDHCP.h"
 
+//extern int hdlCache(int, char*);
+extern struct IP_ADDR ip[CACHEVALUE];
 extern int hdlCache(int);
+extern unsigned int cacheId;
 
-int hdlDHCP(event)
+void hdlDHCP(void* ptr)
 {
+	int *event=NULL;
 	int x;
+	char *ip;
+	event = (int*)ptr;
 	enum stateHdlDhcp state;
-	initHdlDhcpThread();
-	printf("inside hdlDHCP");
-	switch(event)
+//	initHdlDhcpThread();
+	printf("%s\n",__FUNCTION__);
+	printf("event %d\n",*event);
+	switch(*event)
 	{
 		case DHCPDISCOVER:
-			hdlDiscover();
+			if(!cacheId)
+			{
+			x = DHCPDISCOVER;
+//			Can modify request for previously assigned IP
+			hdlDiscover(x);
+			}
+			else
+			{
+//				ip[cacheId].ipState = ASSIGNED;
+				hdlDiscover(DHCPDISCOVERFROMCACHE);
+			}
 			break;
 		case DHCPREQUEST:
-			hdlRequest();
+			x = DHCPREQUEST;
+//			Can modify the request for previously assigned IP
+			hdlRequest(x);
 			break;
 		case DHCPDECLINE:
-			hdlDecline();
+			x = DHCPDECLINE;
+			hdlDecline(x);
 			break;
 	}
-	return 1;
+//	printf("\nIP ADDR = %s\n",ip);
+	pthread_exit(NULL);
 }
 
 int initHdlDhcpThread()
 {
-	printf("Inside initHdlDhcpThread");
+	printf("%s\n",__FUNCTION__);
 	return 1;
 }
-int hdlDiscover()
+//int hdlDiscover(int event, char* ip)
+int hdlDiscover(int event)
 {
-	int event = 0;
-	printf("inside hdlDiscover");
+	//char *ipdis;
+//	ipdis = ip;
+	printf("%s\n",__FUNCTION__);
 //	transfers the call to the cache thread for processing
+//	hdlCache(event, ipdis);
 	hdlCache(event);
+//	ip = ipdis;
 	return 1;
 }
 
 int hdlRequest()
 {
 	int event = 1;
-	printf("inside hdlRequest");
+	printf("%s\n",__FUNCTION__);
 //	transfers the call to the cache thread for processing
 	hdlCache(event);
 	return 1;
@@ -52,8 +80,8 @@ int hdlRequest()
 int hdlDecline()
 {
 	int event = 1;
-	printf("inside hdlDecline");
+	printf("%s\n",__FUNCTION__);
 //	transfers the call to the cache thread for processing
-	hdlCache(event);
+	//hdlCache(event);
 	return 1;
 }

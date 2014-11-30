@@ -5,7 +5,4 @@ enum stateHdlDhcp
 	LISTENING_LT
 };
 
-#define DHCPDISCOVER 0
-#define DHCPREQUEST 1
-#define DHCPDECLINE 2
-
+void hdlDHCP(void *);

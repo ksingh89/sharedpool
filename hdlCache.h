@@ -5,10 +5,8 @@ enum stateHdlCache
 	PROC_CT
 };
 
-#define IPALLOCATION 0
-#define IPDEALLOCATION 1
-#define IPDECLINE 2
-
+//int ipAllocation(char*);
 int ipAllocation(void);
 int ipDeallocation(void);
 int ipDecline(void);
+int ipFromCache(void);

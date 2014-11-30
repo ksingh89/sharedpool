@@ -1,9 +1,14 @@
+#define PORT_LISTEN 6050
+#define BUFSIZE 2048
+
 enum state
 {
 	INIT_MT = 0,
 	CONFIG_MT,
 	PROC_MT
 };
+
+
 
 struct dhcpDiscover
 {
@@ -24,3 +29,7 @@ struct dhcpAck
 {
 	int d;
 };
+
+unsigned int cacheId;
+unsigned int cacheAssignId;
+unsigned int cacheInuseId;

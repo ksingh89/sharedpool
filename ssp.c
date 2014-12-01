@@ -24,7 +24,8 @@ struct sspMessage* readMessage(char *buffer, size_t size)
 	msg = (struct sspMessage*)malloc(sizeof(struct sspMessage));
 	memset(msg, 0, sizeof(struct sspMessage));
 	memcpy(&(msg->messageType), buffer, 1);
-	if(msg->messageType == DHCPDISCOVER)
+	memcpy(msg, buffer, size);
+	/*if(msg->messageType == DHCPDISCOVER)
 		msg->event = IPALLOCATION;
 	else if(msg->messageType == DHCPREQUEST)
 		msg->event = IPCOMMIT;
@@ -36,6 +37,7 @@ struct sspMessage* readMessage(char *buffer, size_t size)
 	{
 		printf("\nERROR!!");
 		return NULL;
-	}
+	}*/
+
 	return msg;
 }

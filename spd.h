@@ -9,7 +9,7 @@
 
 enum ip_state
 {
-	CACHE=0,
+	CACHE=1,
 	ASSIGNED,
 	INUSE
 };
@@ -17,6 +17,7 @@ struct IP_ADDR
 {
 	char ip_addr[255];
 	enum ip_state ipState;//int lease;
-	int timestamp;
-
+	long int timestamp;
+	unsigned int xid;
+	char ip_addr_4[4];
 };

@@ -65,9 +65,9 @@ int main(int argc, char **argv)
 			exit(0);
 		}
 		reqMessage = readMessage(buffer, sizeof(buffer));
-		temp = reqMessage->messageType;
-		pthread_create(&hdlTid,NULL, (void*)&hdlDHCP, (void*)&temp);
-//		pthread_create(&hdlTid,NULL, (void*)&hdlDHCP, (void*)&reqMessage->messageType);
+		//temp.messageType = reqMessage->messageType;
+		//pthread_create(&hdlTid,NULL, (void*)&hdlDHCP, (void*)temp);
+		pthread_create(&hdlTid,NULL, (void*)&hdlDHCP, (void*)reqMessage);
 		pthread_join(hdlTid, NULL);
 //		if(!ip[cacheId].ipState)
 //		{

@@ -17,4 +17,6 @@ struct sspMessage
 {
 	unsigned char messageType;
 	unsigned char event;
+	char ip[4];
+	unsigned int xid;
 };

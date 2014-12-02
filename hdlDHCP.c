@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include "sharedPool.h"
+#include <string.h>
+#include "sqlite3.h"
 #include "hdlCache.h"
 #include "spd.h"
 #include "ssp.h"
 #include "hdlDHCP.h"
-
+extern int flag_discover;
 //extern int hdlCache(int, char*);
 extern struct IP_ADDR ip[CACHEVALUE];
 extern int hdlCache(struct sspMessage*);
@@ -21,6 +21,17 @@ void hdlDHCP(void* ptr)
 	req = (struct sspMessage *)ptr;
 //	enum stateHdlDhcp state;
 //	initHdlDhcpThread();
+	if(!flag_discover)
+	{
+		//get all the config related data and renewal times
+		printf("\ninside flag_discover condition\n");
+		int ret = initDHCPInfo();
+		if(ret == -1)
+		{	
+			flag_discover = 0;
+		}
+		flag_discover =1;
+	}
 	printf("%s\n",__FUNCTION__);
 	printf("event = %d",req->messageType);
 	switch(req->messageType)
@@ -81,7 +92,6 @@ int hdlDiscover(struct sspMessage* request)
 //		hdlDiscover(DHCPDISCOVER);
 		cacheId = 0;
 		}
-
 	}
 	printf("\ncacheId = %d ", cacheId);
 
@@ -119,4 +129,58 @@ int hdlDecline()
 //	transfers the call to the cache thread for processing
 	//hdlCache(event);
 	return 1;
+}
+
+int initDHCPInfo()
+{
+	printf("%s\n",__FUNCTION__);
+	char asc_gateway[16] = {0};
+        char asc_netmask[16] = {0};
+        char asc_dns1[16] = {0};
+        char asc_dns2[16] = {0};
+        char asc_ip_address[16] = {0};
+	int ret;
+	sqlite3 *db = NULL;
+
+	if ( sqlite3_open(DB, &db) == SQLITE_OK )
+        {
+                //isOpenDB = TRUE;
+                //return TRUE;
+        
+
+        sqlite3_stmt *statement = NULL;
+
+	//spd fetch network config and 
+	ret = sqlite3_prepare(db, "select * from network_config", 128, &statement, NULL);
+
+        if(SQLITE_OK != ret)
+        {
+                printf("***sqlite3_prepare ERROR!!! %s(%d)***", sqlite3_errmsg(db), ret);
+		printf("Prepare failure!!\n");
+                return -1;
+        }
+	ret = sqlite3_step(statement);
+
+        if(SQLITE_ROW != ret)
+        {
+                printf("***sqlite3_step ERROR!!! %s(%d)***", sqlite3_errmsg(db), ret);
+		printf("step failure!!\n");
+                return -1;
+        }
+
+        const char *value =
+sqlite3_column_text(statement, 0);
+        strncpy(asc_gateway, value, 16);
+        value = sqlite3_column_text(statement, 1);
+    strncpy(asc_netmask, value, 16);
+       value = sqlite3_column_text(statement, 2);
+    strncpy(asc_dns1, value, 16);
+        value = sqlite3_column_text(statement, 3);
+    strncpy(asc_dns2, value, 16);
+
+        sqlite3_finalize(statement);
+
+        printf("\ngateway=%s, netmask=%s, dns1=%s, dns2=%s\n", asc_gateway, asc_netmask, asc_dns1, asc_dns2);
+	}
+
 }

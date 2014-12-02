@@ -17,6 +17,7 @@
 #include "spd.h"
 #include "ssp.h"
 
+int flag_discover = 0;
 extern struct sspMessage* readMessage(char*, size_t);
 extern struct IP_ADDR ip[CACHEVALUE];
 extern int cacheId;
